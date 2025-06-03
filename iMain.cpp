@@ -40,6 +40,11 @@ void iDraw()
     }
     iText(890, 730, "Score", GLUT_BITMAP_HELVETICA_18);
     iText(950, 730, "2000", GLUT_BITMAP_HELVETICA_18);
+    if (lives == 0){
+        iClear();
+        iSetColor(255,0,0);
+        iText(500,500,"GAME OVER", GLUT_BITMAP_HELVETICA_18);
+    }
 }
 
 /*
@@ -170,7 +175,7 @@ void iSpecialKeyboard(unsigned char key)
 {
     switch (key)
     {
-    case GLUT_KEY_END:
+    case GLUT_KEY_LEFT:
         // do something
         break;
     // place your codes for other keys here
@@ -188,3 +193,10 @@ int main(int argc, char *argv[])
     iInitialize(1000, 750, "nahid");
     return 0;
 }
+
+
+
+
+
+
+
