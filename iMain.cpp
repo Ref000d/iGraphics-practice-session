@@ -2,12 +2,14 @@
 #include <stdbool.h>
 #include "iGraphics.h"
 #include "iSound.h"
+int screen_width = 1000;
+int screen_height = 750;
 float dx;
 float dy;
-int paddle_x = 450;
-int paddle_y = 15;
 int paddle_height = 15;
 int paddle_width = 100;
+int paddle_x = (screen_width/2) + (paddle_width/2);
+int paddle_y = 15;
 int ball_radius = 10;
 int lives = 1;
 int score = 0;
@@ -16,8 +18,8 @@ float ball_y = paddle_height + paddle_y + ball_radius;
 int dbx = 0;
 bool isGameOver = false;
 int gameState = 0;
-int maxMenuOptn = 1;
-int selectedMenuOptn = 1; // please start from 1 (not 0) for this ;)
+int max_menu_optn = 1;
+int selected_menu_idx = 1; // please start from 1 (not 0) for this ;)
 /*
 gamestate:
 0 = main menu
@@ -240,7 +242,7 @@ int main(int argc, char *argv[])
 
     // place your own initialization codes here.
     iInitializeSound();
-    iInitialize(1000, 750, "Breaking Ball");
+    iInitialize(screen_width, screen_height, "Breaking Ball");
     return 0;
 }
 
