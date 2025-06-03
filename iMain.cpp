@@ -15,8 +15,18 @@ float ball_x = paddle_x + paddle_width / 2;
 float ball_y = paddle_height + paddle_y + ball_radius;
 int dbx = 0;
 bool isGameOver = false;
-int gameState = 1;
+int gameState = 0;
+int maxMenuOptn = 1;
+int selectedMenuOptn = 1; // please start from 1 (not 0) for this ;)
+/*
+gamestate:
+0 = main menu
+1 = game
+2 = game over (i guess)
+*/
+
 void gameOver(void);
+void mainMenu(void);
 /*
 function iDraw() is called again and again by the system.
 */
@@ -24,6 +34,10 @@ void iDraw()
 {
     // place your drawing codes here
     iClear();
+    if (gameState == 0)
+    {
+        mainMenu();
+    }
 
     if (gameState == 1)
     {
@@ -110,43 +124,60 @@ key- holds the ASCII value of the key pressed.
 */
 void iKeyboard(unsigned char key)
 {
-    switch (key)
+    if (gameState == 0) // main menu
     {
-    case 'd':
-        dbx += 20;
-        if ((450 + dbx) >= 900)
-            dbx -= 20;
-        if (dx == 0 && dy == 0)
+        switch(key)
         {
-            ball_x += 20;
-            if (ball_x >= (900 + paddle_width / 2))
-            {
-                ball_x -= 20;
-            }
-        }
-        break;
-    case 'a':
-        dbx -= 20;
-        if ((450 + dbx) <= 0)
-            dbx += 20;
-        if (dx == 0 && dy == 0)
-        {
-            ball_x -= 20;
-            if (ball_x <= paddle_width / 2)
-            {
-                ball_x += 20;
-            }
+        case ' ':
+            gameState = 1;
+            break;
+        default:
+            break;
         }
 
-        break;
-    // place your codes for other keys here
-    case ' ':
-    {
-        dx = 10;
-        dy = 10;
     }
-    default:
-        break;
+
+
+    if (gameState == 1) // main game
+    {
+        switch (key)
+        {
+        case 'd':
+            dbx += 20;
+            if ((450 + dbx) >= 900)
+                dbx -= 20;
+            if (dx == 0 && dy == 0)
+            {
+                ball_x += 20;
+                if (ball_x >= (900 + paddle_width / 2))
+                {
+                    ball_x -= 20;
+                }
+            }
+            break;
+        case 'a':
+            dbx -= 20;
+            if ((450 + dbx) <= 0)
+                dbx += 20;
+            if (dx == 0 && dy == 0)
+            {
+                ball_x -= 20;
+                if (ball_x <= paddle_width / 2)
+                {
+                    ball_x += 20;
+                }
+            }
+
+            break;
+        // place your codes for other keys here
+        case ' ':
+        {
+            dx = 10;
+            dy = 10;
+        }
+        default:
+            break;
+        }
     }
 }
 void ballMotion()
@@ -199,6 +230,9 @@ void iSpecialKeyboard(unsigned char key)
     }
 }
 
+
+
+// ************************************************************************************
 int main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
@@ -215,4 +249,15 @@ void gameOver(void)
     iSetColor(255, 0, 0);
     iText(500, 350, "GAME OVER");
     iPlaySound("assets/sounds/mus_gameover.wav", true);
+}
+
+void mainMenu(void)
+{
+
+
+    //iShowImage(0, 0, "assets/images/mainmenu.png");
+    iSetColor(255,255,255);
+    iText(500,300,"Do you like BALLS?");
+    iText(500,250,"If yes, then press spacebar");
+
 }
