@@ -17,7 +17,7 @@ int lives = 1;
 int score = 0;
 float ball_x = paddle_x + paddle_width / 2;
 float ball_y = paddle_height + paddle_y + ball_radius;
-int dbx = 0;
+int dbx = 0, dby = 0;
 bool isGameOver = false;
 int gameState = 0;
 int max_menu_optn = 1;
@@ -27,10 +27,14 @@ gamestate:
 0 = main menu
 1 = game
 2 = game over (i guess)
+3 = Controls menu
 */
 
 void gameOver(void);
 void mainMenu(void);
+void controlsMenu(void);
+
+
 /*
 function iDraw() is called again and again by the system.
 */
@@ -38,6 +42,9 @@ void iDraw()
 {
     // place your drawing codes here
     iClear();
+    printf("%d",selected_menu_idx);
+    
+    
     if (gameState == 0)
     {
         mainMenu();
@@ -45,18 +52,22 @@ void iDraw()
         if (selected_menu_idx == 1){
             iFilledCircle(300,500,5);
         }
-        if (selected_menu_idx == 2){
+        else if (selected_menu_idx == 2){
             iFilledCircle(300,450,5);
         }
-        if (selected_menu_idx == 3){
+        else if (selected_menu_idx == 3){
             iFilledCircle(300,400,5);
+        }
+        else if (selected_menu_idx == 0){
+            iFilledCircle(300,500,5);
+            selected_menu_idx = 1;
         }
     }
 
     if (gameState == 1)
     {
         iSetColor(85, 115, 250);
-        iFilledRectangle(paddle_x + dbx, paddle_y, paddle_width, paddle_height);
+        iFilledRectangle(paddle_x + dbx, paddle_y + dby, paddle_width, paddle_height);
         iSetColor(213, 105, 43);
         iFilledCircle(ball_x, ball_y, ball_radius);
         iSetColor(255, 0, 0);
@@ -84,9 +95,37 @@ void iDraw()
             gameState = 2;
         }
     }
-    else if (gameState == 2)
+    if (gameState == 2)
     {
-        iShowImage(0, 0, "assets/images/gameover1.jpg");
+        //iShowImage(0, 0, "assets/images/gameover1.jpg");
+        gameOver();
+        iSetColor(255,255,255);
+        if (selected_menu_idx == 1){
+            iFilledCircle(300,350,5);
+        }
+        else if (selected_menu_idx == 2){
+            iFilledCircle(300,300,5);
+        }
+        else if (selected_menu_idx == 0){
+            iFilledCircle(300,350,5);
+            selected_menu_idx = 1;
+        }
+        
+    }
+    if (gameState == 3)
+    {
+        controlsMenu();
+        iSetColor(255,255,255);
+        if (selected_menu_idx == 1){
+            iFilledCircle(300,350,5);
+        }
+        if (selected_menu_idx == 2){
+            iFilledCircle(300,300,5);
+        }
+        else {
+            iFilledCircle(300,350,5);
+            selected_menu_idx = 1;
+        }
     }
 }
 
@@ -143,30 +182,45 @@ void iKeyboard(unsigned char key)
         switch(key)
         {
         case 'w':
-            if (gameState == 0 && selected_menu_idx>1){
+            if (selected_menu_idx>1){
                 selected_menu_idx--;
             }
             break;
         case 's':
-            if (gameState == 0 && selected_menu_idx<3){
+            if (selected_menu_idx<3){
                 selected_menu_idx++;
             }
             break;
         case ' ':
-            if (gameState==0 && selected_menu_idx==1)
+            if (selected_menu_idx == 1)
                 gameState = 1;
-            if (gameState==0 && selected_menu_idx==3)
+            else if (selected_menu_idx == 2)
+            {
+                gameState = 3; // Controls menu
+            }
+            else if (selected_menu_idx == 3)
                 exit(0);
+            selected_menu_idx = 0;
+            break;
         default:
             break;
         }
-
     }
 
     if (gameState == 1) // main game
     {
         switch (key)
         {
+        case 'w':
+            dby += 20;
+            if (dby >= 350)
+                dby -= 20;
+            break;
+        case 's':
+            dby -= 20;
+            if (dby <=0)
+                dby += 20;
+            break;
         case 'd':
             dbx += 20;
             if ((450 + dbx) >= 900)
@@ -203,30 +257,86 @@ void iKeyboard(unsigned char key)
             break;
         }
     }
+    if (gameState == 2) // game over
+    {
+        switch(key)
+        {
+        case 'w':
+            if (selected_menu_idx>1){
+                selected_menu_idx--;
+            }
+            break;
+        case 's':
+            if (selected_menu_idx<2){
+                selected_menu_idx++;
+            }
+            break;
+        case ' ':
+            if (selected_menu_idx == 1)
+                gameState = 0;
+            else if (selected_menu_idx == 2)
+            {
+                exit(0);
+            }
+            selected_menu_idx = 0;
+            break;
+        default:
+            break;
+        }
+    }
+    
+    if (gameState == 3) // controls menu
+    {
+        switch(key)
+        {
+        case 'w':
+            if (selected_menu_idx>1){
+                selected_menu_idx--;
+            }
+            break;
+        case 's':
+            if (selected_menu_idx<2){
+                selected_menu_idx++;
+            }
+            break;
+        case ' ':
+            if (selected_menu_idx==1)
+                gameState = 0;
+            if (selected_menu_idx==2)
+                exit(0);
+            selected_menu_idx = 0;
+            break;
+            
+        default:
+            break;
+        }
+
+    }
 }
 void ballMotion()
 {
     ball_x += dx;
     ball_y += dy;
 
-    if (ball_x + ball_radius > 1000 || ball_x - ball_radius < 0)
+    if (ball_x + ball_radius > screen_width || ball_x - ball_radius < 0)
     {
         dx *= (-1);
     }
 
-    if (ball_y + ball_radius > 750)
+    if (ball_y + ball_radius > screen_height)
     {
         dy *= (-1);
     }
 
-    if (((ball_x > (450 + dbx)) && ball_x < (550 + dbx)) && ball_y < (paddle_height + paddle_y + ball_radius))
+    if (((ball_x > (450 + dbx)) && ball_x < (550 + dbx)) && ball_y < (paddle_height + paddle_y + dby + ball_radius))
     {
         dy *= (-1);
+        score += 2000; // score +2000 every time it hits paddle, but cant display it rn :(
     }
     if (ball_y < paddle_y)
     {
         lives--;
-        dbx = 0;
+        dbx = dby = 0;
         dx = dy = 0;
         ball_x = paddle_x + dbx + paddle_width / 2;
         ball_y = paddle_height + paddle_y + ball_radius;
@@ -256,7 +366,7 @@ void iSpecialKeyboard(unsigned char key)
 
 
 
-// ************************************************************************************
+// *********************************************************************************************
 int main(int argc, char *argv[])
 {
     glutInit(&argc, argv);
@@ -271,8 +381,12 @@ int main(int argc, char *argv[])
 void gameOver(void)
 {
     iSetColor(255, 0, 0);
-    iText(500, 350, "GAME OVER");
-    iPlaySound("assets/sounds/mus_gameover.wav", true);
+    iText(350,450,"You played like a total novice. Wanna quit?",GLUT_BITMAP_HELVETICA_18);
+    iText(450,500,"HAHAHAHA",GLUT_BITMAP_HELVETICA_18);
+    iSetColor(255,255,255);
+    iText(350,350,"You think getting rid of me would be that easy?");
+    iText(400,300,"Yeah, I better quit :(");
+    //iPlaySound("assets/sounds/mus_gameover.wav", true);
 }
 
 void mainMenu(void)
@@ -287,3 +401,15 @@ void mainMenu(void)
     iText(350, 400, "QUIT");
 
 }
+
+void controlsMenu(void){
+    iSetColor(255,255,255);
+    iText(350,450,"You don't know how to play DXBALL?",GLUT_BITMAP_HELVETICA_18);
+    iText(450,500,"LOL NOOB",GLUT_BITMAP_HELVETICA_18);
+    iText(420,350,"Just wanted to check");
+    iText(360,300,"I don't wanna play this shit anymore");
+}
+
+
+
+
