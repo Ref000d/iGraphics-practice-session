@@ -4,11 +4,13 @@
 #include "iSound.h"
 int screen_width = 1000;
 int screen_height = 750;
+int padding_x = 25;
+int padding_y = 20;
 float dx;
 float dy;
 int paddle_height = 15;
 int paddle_width = 100;
-int paddle_x = (screen_width/2) + (paddle_width/2);
+int paddle_x = (screen_width/2) - (paddle_width/2);
 int paddle_y = 15;
 int ball_radius = 10;
 int lives = 1;
@@ -39,6 +41,16 @@ void iDraw()
     if (gameState == 0)
     {
         mainMenu();
+        iSetColor(255,255,255);
+        if (selected_menu_idx == 1){
+            iFilledCircle(300,500,5);
+        }
+        if (selected_menu_idx == 2){
+            iFilledCircle(300,450,5);
+        }
+        if (selected_menu_idx == 3){
+            iFilledCircle(300,400,5);
+        }
     }
 
     if (gameState == 1)
@@ -48,22 +60,22 @@ void iDraw()
         iSetColor(213, 105, 43);
         iFilledCircle(ball_x, ball_y, ball_radius);
         iSetColor(255, 0, 0);
-        iText(25, 730, "Lives: ", GLUT_BITMAP_HELVETICA_18);
+        iText(padding_x, screen_height-padding_y, "Lives: ", GLUT_BITMAP_HELVETICA_18);
 
         if (lives == 3)
         {
-            iText(75, 730, "3", GLUT_BITMAP_HELVETICA_18);
+            iText(padding_x*3, screen_height-padding_y, "3", GLUT_BITMAP_HELVETICA_18);
         }
         else if (lives == 2)
         {
-            iText(75, 730, "2", GLUT_BITMAP_HELVETICA_18);
+            iText(padding_x*3, screen_height-padding_y, "2", GLUT_BITMAP_HELVETICA_18);
         }
         else if (lives == 1)
         {
-            iText(75, 730, "1", GLUT_BITMAP_HELVETICA_18);
+            iText(padding_x*3, screen_height-padding_y, "1", GLUT_BITMAP_HELVETICA_18);
         }
-        iText(890, 730, "Score", GLUT_BITMAP_HELVETICA_18);
-        iText(950, 730, "2000", GLUT_BITMAP_HELVETICA_18);
+        iText(screen_width - 110, screen_height-padding_y, "Score", GLUT_BITMAP_HELVETICA_18);
+        iText(screen_width - 50, screen_height-padding_y, "2000", GLUT_BITMAP_HELVETICA_18);
         if (lives < 1 && !isGameOver)
         {
 
@@ -130,15 +142,26 @@ void iKeyboard(unsigned char key)
     {
         switch(key)
         {
-        case ' ':
-            gameState = 1;
+        case 'w':
+            if (gameState == 0 && selected_menu_idx>1){
+                selected_menu_idx--;
+            }
             break;
+        case 's':
+            if (gameState == 0 && selected_menu_idx<3){
+                selected_menu_idx++;
+            }
+            break;
+        case ' ':
+            if (gameState==0 && selected_menu_idx==1)
+                gameState = 1;
+            if (gameState==0 && selected_menu_idx==3)
+                exit(0);
         default:
             break;
         }
 
     }
-
 
     if (gameState == 1) // main game
     {
@@ -169,7 +192,6 @@ void iKeyboard(unsigned char key)
                     ball_x += 20;
                 }
             }
-
             break;
         // place your codes for other keys here
         case ' ':
@@ -259,7 +281,9 @@ void mainMenu(void)
 
     //iShowImage(0, 0, "assets/images/mainmenu.png");
     iSetColor(255,255,255);
-    iText(500,300,"Do you like BALLS?");
-    iText(500,250,"If yes, then press spacebar");
+    iText(350,700,"Do you like BALLS?",GLUT_BITMAP_HELVETICA_18);
+    iText(350,500,"PLAY GAME");
+    iText(350,450,"CONTROLS");
+    iText(350, 400, "QUIT");
 
 }
