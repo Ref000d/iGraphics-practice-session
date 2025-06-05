@@ -2,14 +2,19 @@
 #include <stdbool.h>
 #include "iGraphics.h"
 #include "iSound.h"
+#include <math.h>
+double pi = 2 * acos(0.0);
 float dx;
 float dy;
+float angle = pi/4;
+float ball_speed = 10.0;
 int screen_width = 1000;
 int screen_height = 750;
 int paddle_width = 130;
 int paddle_height = 30;
 int paddle_x = screen_width / 2 - paddle_width / 2;
 int paddle_y = 15;
+int pcx; // paddle corner x
 int ball_radius = 10;
 int lives = 3;
 int score = 0;
@@ -20,6 +25,9 @@ bool isGameOver = false;
 int gameState = 1;
 char scoreText[10];
 char lifeText[10];
+
+
+
 void gameOver(void);
 /*
 function iDraw() is called again and again by the system.
@@ -158,8 +166,8 @@ void iKeyboard(unsigned char key)
             if (dx == 0 && dy == 0)
             {
 
-                dx = 5;
-                dy = 5.5;
+                dx = ball_speed * cos(angle);
+                dy = ball_speed * sin(angle);
             }
         }
         default:
@@ -169,6 +177,7 @@ void iKeyboard(unsigned char key)
 }
 void ballMotion()
 {
+    pcx = paddle_x + paddle_width + dbx;
     ball_x += dx;
     ball_y += dy;
 
@@ -186,7 +195,21 @@ void ballMotion()
 
     if (ball_x > paddle_x + dbx && ball_x < paddle_x + paddle_width + dbx && ball_y + ball_radius < paddle_height + paddle_y + ball_radius)
     {
-        dy *= (-1);
+        // if (ball_x < pcx && ball_x > paddle_x + dbx)
+        // {
+        //     angle = ((ball_x - pcx)/(paddle_width/2))*(pi/2);
+        // }
+        // else if (ball_x > pcx && ball_x < paddle_x + paddle_width + dbx)
+        // {
+        //     angle = ((ball_x - pcx)/(paddle_width/2))*(pi/2);
+        // }
+        // else
+        // {
+        //     angle = pi / 4;
+        // }
+        angle = ((pcx - ball_x)/(paddle_width))*(pi);
+        dx = ball_speed * cos(angle);
+        dy = ball_speed * sin(angle);
         score += 20;
         if (dx != 0 && dy != 0)
             iPlaySound("assets/sounds/bounce.wav");
@@ -194,6 +217,7 @@ void ballMotion()
     if (ball_y < paddle_y)
     {
         lives--;
+        angle = pi / 4;
         iPlaySound("assets/sounds/lifelost.wav");
         dbx = 0;
         dx = dy = 0;
