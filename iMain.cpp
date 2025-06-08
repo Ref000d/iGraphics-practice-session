@@ -42,7 +42,7 @@ void iDraw()
 {
     // place your drawing codes here
     iClear();
-    printf("%d",selected_menu_idx);
+    // printf("%d",selected_menu_idx);
     
     
     if (gameState == 0)
